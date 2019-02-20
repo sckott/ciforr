@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CI for R</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Scott" />
+    <link href="index_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="scott-theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# CI for R
+### Scott
+### 20 February, 2019
+
+---
+
+
+## .large[What's CI?]
+
+### CI: Continuous Integration
+
+ref: &lt;https://www.thoughtworks.com/continuous-integration&gt;
+
+&gt; Continuous Integration (CI) is a development practice that requires developers to integrate code into a shared repository several times a day. Each check-in is then verified by an automated build, allowing teams to detect problems early. 
+
+---
+
+## .large[What's CI?]
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+&lt;center&gt;&lt;h3&gt;make sure your software doesn't just work on your machine&lt;/h3&gt;&lt;/center&gt;
+&lt;br&gt;
+&lt;ul&gt;
+  &lt;li style="font-size:30px";&gt;&amp;amp; works on other operating systems&lt;/li&gt;
+  &lt;li style="font-size:30px";&gt;&amp;amp; works on other R versions&lt;/li&gt;
+  &lt;li style="font-size:30px";&gt;&amp;amp; works in XXX other contexts&lt;/li&gt;
+&lt;/ul&gt;
+
+---
+
+## .large[usethis approach]
+
+create a package, use git
+
+```r
+usethis::create_package("turtles")
+usethis::use_git()
+```
+
+create repo on github, push up
+
+```sh
+cd turtles
+hub create sckott/turtles
+git push --set-upstream origin master
+```
+
+use travis and/or appveyor
+
+```r
+usethis::use_travis()
+usethis::use_appveyor()
+```
+
+---
+
+## .large[yaml files]
+
+`.travis.yml`
+
+```yaml
+language: R
+sudo: false
+cache: packages
+```
+
+`.appveyor.yml`
+
+Looks similar-ish
+
+&lt;hr&gt;
+
+Travis R docs &lt;https://docs.travis-ci.com/user/languages/r/&gt;
+
+Appveyor sort of docs &lt;https://github.com/krlmlr/r-appveyor&gt;
+
+---
+
+## .large[yaml: more complicated]
+
+```yaml
+language: r
+
+matrix:
+  include:
+    - os: linux
+      r: oldrel
+    - os: linux
+      r: release
+      env: R_CODECOV=true
+    - os: linux
+      r: devel
+      env: _R_CHECK_LENGTH_1_LOGIC2_=TRUE
+    - os: osx
+      osx_image: xcode7.3
+      r: oldrel
+
+r_binary_packages:
+  - covr
+  - httr
+
+after_success:
+  - if [[ "${R_CODECOV}" ]]; then R -e 'covr::codecov()'; fi
+```
+
+---
+
+## .large[CI in action]
+
+![travis](img/travis_eg.png)
+![appveyor](img/appveyor_eg.png)
+
+---
+
+## .large[seealso: tic and travis]
+
+&lt;https://github.com/ropenscilabs/tic&gt;
+
+&lt;https://github.com/ropenscilabs/travis&gt;
+
+
+```r
+# install.packages("remotes")
+remotes::install_github("ropenscilabs/tic")
+remotes::install_github("ropenscilabs/travis")
+```
+
+---
+
+## .large[CRAN checks]
+
+&lt;https://cran.rstudio.com/web/checks/check_results_vcr.html&gt;
+
+![cran_checks](img/cranchecks.png)
+
+---
+
+## .large[CRAN checks API]
+
+&lt;https://github.com/ropensci/cchecksapi&gt;
+
+![badges](img/badges.png)
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
